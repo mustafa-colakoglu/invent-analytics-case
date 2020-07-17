@@ -117,7 +117,6 @@ router.get(
       res.json(errors.userNotFound);
     } else {
       find = find.toJSON();
-      console.log(find.past);
       find.books = {
         past: find.past.map((item) => ({
           name: item.book.name,
