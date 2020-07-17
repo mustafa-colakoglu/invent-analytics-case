@@ -4,6 +4,8 @@ const validatorChechMiddleware = require("./middeware/validatorChechMiddleware")
 const Book = require("../models/book");
 const BookScore = require("../models/bookScore");
 const errors = require("./errors");
+const sequelize = require("../db");
+const { Sequelize } = require("../db");
 const router = Router();
 
 router.post(
@@ -30,7 +32,11 @@ router.get(
     const id = parseInt(req.params.id);
     let find = await Book.findOne({
       where: { id },
-      attributes: ["id", "name"],
+      attributes: [
+        "id",
+        "name",
+        [Sequelize.fn("AVG", Sequelize.col("bookScore.score")), "score"],
+      ],
       include: [{ model: BookScore, as: "bookScore" }],
     });
     if (!find) {
@@ -38,14 +44,15 @@ router.get(
       res.json(errors.bookNotFound);
     } else {
       find = find.toJSON();
-      if (find.bookScore.length == 0) find.score = -1;
-      else {
-        let sum = 0;
-        for (let i = 0; i < find.bookScore.length; i++) {
-          sum += find.bookScore[i].score;
-        }
-        find.score = sum / find.bookScore.length;
-      }
+      if (find.score === 0) find.score = -1;
+      // if (find.bookScore.length == 0) find.score = -1;
+      // else {
+      //   let sum = 0;
+      //   for (let i = 0; i < find.bookScore.length; i++) {
+      //     sum += find.bookScore[i].score;
+      //   }
+      //   find.score = sum / find.bookScore.length;
+      // }
       delete find.bookScore;
       res.json(find);
     }
