@@ -12,6 +12,6 @@
     "express": "^4.17.3",
     "express-validator": "^6.6.0",
     "mysql2": "^2.1.0",
-    "sequelize": "^6.23.2"
+    "sequelize": "^6.28.2"
   }
 }
